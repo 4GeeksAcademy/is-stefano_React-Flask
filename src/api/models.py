@@ -81,7 +81,7 @@ class Medias(db.Model):
               'comment_text': self.comment_text,
               'author_id': self.author_id,
               'post_id': self.post_id
-         } 
+            } 
     
 
 
