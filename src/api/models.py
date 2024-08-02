@@ -82,6 +82,71 @@ class Medias(db.Model):
               'author_id': self.author_id,
               'post_id': self.post_id
             } 
-    
 
+class Characters(db.Model):
+    __tablename__= "characters"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60), unique=True, nullable=False)
+
+
+    def __repr__(self):
+        return f'<Characters {self.name}>'
+
+    def serialize(self):
+        return {"uid": self.uid,
+                "name": self.username}
+
+
+class CharacterDetails(db.Model):
+    __tablename__= "characters Details"
+    firstname = db.Column(db.String(60), unique=True, nullable=False)
+    laststname = db.Column(db.String(60), unique=True, nullable=False)
+    height = db.Column(db.Integer)
+    mass = db.Column(db.Integer)
+    gender = db.Column(db.String, nullable=False)
+    character_id = db.Column(db.Integer, db.ForeignKey('characters.id'))
+    character_to = db.relationship('Characters', foreign_keys=[character_id])
+
+    def __repr__(self):
+        return f'<Character {self.name} - {self.planet_origin}>'
+
+    def serialize(self):
+        return {"id": self.id,
+                "username": self.username,
+                "firstname": self.firstname,
+                "lastname": self.lastname}
+
+
+class Starships(db.Model):
+    __tablename__= "starship"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60), unique=True, nullable=False)
+
+class StarshipsDetails(db.Model):
+    __tablename__= "starships Details"
+    model = db.Column(db.String(60), unique=True, nullable=False)
+    type = db.Column(db.String(60), unique=True, nullable=False)
+    length = db.Column(db.Integer)
+    starship_id = db.Column(db.Integer, db.ForeignKey('starships.id'))
+    starship_to = db.relationship('Starships', foreign_keys=[starship_id])
+   
+class Starships(db.Model):
+    __tablename__= "starship"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60), unique=True, nullable=False)  
+
+class Planets(db.Model):
+    __tablename__= "starship"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60), unique=True, nullable=False)  
+
+class PlanetsDetails(db.Model):
+    __tablename__= "planets Details"
+    population = db.Column(db.Integer)
+    terrain = db.Column(db.String(60), unique=True, nullable=False)
+    climate = db.Column(db.String(60), unique=True, nullable=False)
+    planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
+    planet_to = db.relationship('Planets', foreign_keys=[planet_id])
+
+   
 
