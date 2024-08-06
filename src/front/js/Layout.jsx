@@ -10,7 +10,7 @@ import ScrollToTop from "./component/ScrollToTop.jsx";
 import { Home } from "./pages/Home.jsx";
 import { Demo } from "./pages/Demo.jsx";
 import { Single } from "./pages/Single.jsx";
-import { Login } from "./pages/Login.jsx";
+import { Login } from "./component/Login.jsx";
 
 
 //create your first component

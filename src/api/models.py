@@ -25,7 +25,7 @@ class Users(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
 
     def __repr__(self):
-         return f'<User {self.email} - {self.username}>'
+         return f'<User {self.email}>'
 
     def serialize(self):
         return {
@@ -148,5 +148,18 @@ class PlanetsDetails(db.Model):
     planet_id = db.Column(db.Integer, db.ForeignKey('planets.id'))
     planet_to = db.relationship('Planets', foreign_keys=[planet_id])
 
-   
+class Favoritos(db.Model):
+    __tablename__= "Favoritos"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    item = db.Column(db.String(120))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('user_to', lazy='select'))
+    
+    def __repr__(self):
+        return f'El item favorito de {self.user_id} es {self.item}'
+    
+    def serialize(self):
+        return{"id": self.id,
+               "item": self.item,
+               "user_id": self.user_id}
 

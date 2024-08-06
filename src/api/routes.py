@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, Users, Posts, Comments, Followers, Medias
+from api.models import db, Users, Posts, Comments, Followers, Medias, Favoritos
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token
@@ -157,13 +157,13 @@ def handle_followers():
 def login():
     response_body = {}
     data = request.json
-    username = data.get("username", None)
+    email = data.get("email", None)
     password = data.get("password", None)
     # TODO: realizar la logica para verificar en nuestra DB
-    if username != "test" or password != "test":
+    if email != "test" or password != "test":
         response_body['message'] = "Bad username or password"
         return response_body, 401
-    access_token = create_access_token(identity={'username': username, 'user_id': 30, 'is_admin': True})
+    access_token = create_access_token(identity={'email': email, 'user_id': 30, 'is_admin': True})
     response_body['message'] = 'User logged'
     response_body['access token'] = access_token
     # return jsonify(access_token=access_token)
@@ -190,3 +190,22 @@ def profile():
     response_body['message'] = f'Acceso denegado, no eres el usuario 30'
     response_body['user_data'] = {current_user}
     return response_body, 403
+
+@api.route("/Favoritos/<int:user_id>", methods=["POST"])
+def favoritos():
+    response_body = {}
+    data = request.json
+    item = data.get('item')
+    user = db.session.execute(db.select(favoritos).Where(Favoritos.user_id == user_id).scalar)
+    Favoritos2 = Favoritos(item = data.get('item')
+                        user_id = data.get('user_id'))
+    db.session.add(Favoritos2)
+    db.session.commit()
+    response_body["message"] = 'POST request'
+    return response_body, 201
+if request.method == 'GET':
+    list_Favoritos = db.session.execute(db.select(favoritos).Where(Favoritos.user_id == user_id)).scalars()
+    rows = [row.serialize() for row in list_Favoritos]
+    response_body["message"] = 'POST request'
+    response_body["result"] = rows
+    return response_body, 201
