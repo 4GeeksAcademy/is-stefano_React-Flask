@@ -18,6 +18,7 @@ export const Home = () => {
 			</div>
 			<div className="container">
 			<Link to = "/login"> <button className="btn btn-success" type="submit">Login</button> </Link> 
+			<Link to = "/signUp"> <button className="btn btn-success" type="submit">Sign up</button> </Link> 
 			</div>
 			<p>
 				This boilerplate comes with lots of documentation:{" "}

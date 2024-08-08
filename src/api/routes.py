@@ -169,6 +169,26 @@ def login():
     # return jsonify(access_token=access_token)
     return response_body, 200
 
+@api.route("/signUp", methods=["POST"])
+def signup():
+    response_body = {}
+    data = request.json
+    # Checkear si email está en la base de datos
+    user = db.session.execute(db.select(Users).where(Users.email == user.email)).scalar()
+    user = Users()
+    user.email = email
+    user.password = password
+    user.is_active = True
+    user.is_admin = False
+    email = data.get("email", None).lower()
+    password = data.get("password", None)
+    db.session.add(user)
+    db.session.commit()
+    access_token = create_access_token(identity={'email': email, 'user_id': user.id, 'is_admin': user.is_admin})
+    response_body['message'] = 'User logged'
+    response_body['access token'] = access_token
+    return response_body, 200
+
 @api.route("/protected", methods=["GET"])
 @jwt_required()
 def protected():
@@ -191,21 +211,29 @@ def profile():
     response_body['user_data'] = {current_user}
     return response_body, 403
 
-@api.route("/Favoritos/<int:user_id>", methods=["POST"])
+@api.route("/Favoritos/<int:user_id>", methods=["POST", "GET"])
+@jwt_required
 def favoritos():
     response_body = {}
-    data = request.json
-    item = data.get('item')
-    user = db.session.execute(db.select(favoritos).Where(Favoritos.user_id == user_id).scalar)
-    Favoritos2 = Favoritos(item = data.get('item')
-                        user_id = data.get('user_id'))
-    db.session.add(Favoritos2)
-    db.session.commit()
-    response_body["message"] = 'POST request'
-    return response_body, 201
-if request.method == 'GET':
-    list_Favoritos = db.session.execute(db.select(favoritos).Where(Favoritos.user_id == user_id)).scalars()
-    rows = [row.serialize() for row in list_Favoritos]
-    response_body["message"] = 'POST request'
-    response_body["result"] = rows
-    return response_body, 201
+    current_user = get_jwt_identity()
+    user = db.session.execute(db.select(Users).Where(Users.id == current_user['user_id']).scalar())
+    if not user:
+        response_body["results"] = {}
+        response_body["message"] = "Missing user"
+        return response_body, 404
+    if request.method == 'POST':
+        data = request.json
+        item = data.get("item")
+        if not item:
+            response_body["message"] = "Missing favourite item"
+            return response_body, 400
+        favoritos = Favoritos(item=item, user_id=current_user['user_id'])
+        db.session.add(favoritos)
+        db.session.commit
+        response_body['message'] = "Favourite item added successfully"
+    if request.method == 'GET':
+        favoritos = db.session.execute(db.select(favoritos).Where(Favoritos.user_id == current_user['user_id'])).scalars()
+        results = [("id": row.id, "item": row.item) for row in favorites]
+        response_body["result"] = results
+        response_body["message"] = f'Favorites for user {current_user ["email"]} retrieved successfully'
+        return response_body, 200
